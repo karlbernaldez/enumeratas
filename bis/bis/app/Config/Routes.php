@@ -19,6 +19,8 @@ $routes->get('/faqs',           'UIController::faqs');
 $routes->get('/privacy-policy', 'UIController::privacy_policy');
 $routes->get('/terms',          'UIController::terms_of_use');
 
+$routes->post('/chatbot/ask', 'ChatbotController::ask');
+
 // Public signup — Resident and SK only (Captain/Secretary/Treasurer are created by admin)
 $routes->get('/signup',           'UIController::create_acc');
 $routes->get('/signup/(:alpha)',  'UIController::create_acc/$1'); // keep for backwards compat
@@ -45,6 +47,7 @@ $routes->group('/captain', ['filter' => ['auth', 'role:captain']], function ($ro
     $routes->get('reports',                      'UIController::captain_reports');
     $routes->get('reports/export',               'ReportsExportController::export/captain');
     $routes->get('chatbot',                      'UIController::captain_chatbot');
+
     $routes->get('blotter',                      'BlotterController::adminIndex/captain');
     $routes->get('blotter/(:num)',               'BlotterController::show/$1');
     $routes->post('blotter/status/(:num)',        'BlotterController::updateStatus/$1');
@@ -94,6 +97,12 @@ $routes->group('/captain', ['filter' => ['auth', 'role:captain']], function ($ro
 
     // Census PDF export
     $routes->get('census/export/pdf', 'CensusExportController::exportPdf');
+
+    $routes->get('resident-update-requests', 'ResidentUpdateRequestController::index');
+    $routes->get('resident-update-requests/(:num)', 'ResidentUpdateRequestController::show/$1');
+    $routes->post('resident-update-requests/(:num)/under-review', 'ResidentUpdateRequestController::markUnderReview/$1');
+    $routes->post('resident-update-requests/(:num)/approve', 'ResidentUpdateRequestController::approve/$1');
+    $routes->post('resident-update-requests/(:num)/reject', 'ResidentUpdateRequestController::reject/$1');
 });
 
 // ── Secretary (Super Admin) ───────────────────────────────────────────────────
@@ -157,6 +166,12 @@ $routes->group('/secretary', ['filter' => ['auth', 'role:secretary']], function 
 
     // Census PDF export
     $routes->get('census/export/pdf', 'CensusExportController::exportPdf');
+
+    $routes->get('resident-update-requests', 'ResidentUpdateRequestController::index');
+    $routes->get('resident-update-requests/(:num)', 'ResidentUpdateRequestController::show/$1');
+    $routes->post('resident-update-requests/(:num)/under-review', 'ResidentUpdateRequestController::markUnderReview/$1');
+    $routes->post('resident-update-requests/(:num)/approve', 'ResidentUpdateRequestController::approve/$1');
+    $routes->post('resident-update-requests/(:num)/reject', 'ResidentUpdateRequestController::reject/$1');
 });
 
 // ── Treasurer ─────────────────────────────────────────────────────────────────

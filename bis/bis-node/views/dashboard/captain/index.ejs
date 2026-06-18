@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Bacolod BIS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+    .cal-day{min-height:80px;background:#fff;border:1px solid #e8ecf4;border-radius:8px;padding:6px;font-size:12px;}
+    .cal-day--header{min-height:auto;background:#f0f2f8;font-weight:700;font-size:11px;color:#9aa0b4;text-align:center;padding:8px 4px;border-radius:6px;}
+    .cal-day--today{border-color:#1d2448;background:#f0f4ff;}
+    .cal-day-num{font-weight:700;color:#1a1d2e;margin-bottom:4px;}
+    .cal-event{background:#1d2448;color:#fff;border-radius:4px;padding:2px 6px;font-size:10px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .cal-event--blotter{background:#c0392b;}
+    .cal-event--holiday{background:#16a085;}
+  </style>
+</head>
+<body class="db-body">
+  <% const role = session.role || 'captain'; const active = 'dashboard'; %>
+  <%- include('../../partials/sidebar', { role, active }) %>
+  <div class="db-main">
+    <%- include('../../partials/topbar', { pageTitle: 'Dashboard' }) %>
+    <div class="db-content">
+      <%- include('../../partials/flash') %>
+
+      <div class="db-welcome">
+        <div>
+          <h2>Welcome, <%= session.fullName || 'Captain' %> 👋</h2>
+          <p>Barangay Bacolod, Bato, Camarines Sur — Barangay Information System</p>
+        </div>
+        <div class="db-welcome-icon"><i class="fas fa-user-tie"></i></div>
+      </div>
+
+      <!-- Calendar header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <h3 class="db-section-title" style="margin:0;" id="calMonthLabel"></h3>
+        <div style="display:flex;gap:8px;">
+          <button class="db-btn db-btn--outline db-btn--sm" onclick="calPrev()"><i class="fas fa-chevron-left"></i></button>
+          <button class="db-btn db-btn--outline db-btn--sm" onclick="calToday()">Today</button>
+          <button class="db-btn db-btn--outline db-btn--sm" onclick="calNext()"><i class="fas fa-chevron-right"></i></button>
+          <button class="db-btn db-btn--primary db-btn--sm" onclick="document.getElementById('addEventModal').classList.add('active')"><i class="fas fa-plus"></i> Add Event</button>
+        </div>
+      </div>
+
+      <!-- Day headers -->
+      <div class="cal-grid" style="margin-bottom:4px;">
+        <% ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(d => { %><div class="cal-day cal-day--header"><%= d %></div><% }); %>
+      </div>
+      <div class="cal-grid" id="calBody"></div>
+    </div>
+  </div>
+
+  <!-- Add Event Modal -->
+  <div class="db-modal-overlay" id="addEventModal">
+    <div class="db-modal" style="max-width:480px;">
+      <div class="db-modal-header">
+        <h3><i class="fas fa-calendar-plus"></i> Add Event</h3>
+        <button class="db-modal-close" onclick="document.getElementById('addEventModal').classList.remove('active')"><i class="fas fa-times"></i></button>
+      </div>
+      <form action="/<%= role %>/calendar/store" method="POST">
+        <div class="db-modal-body">
+          <div class="db-form-grid">
+            <div class="db-form-group db-form-group--full">
+              <label>Title <span style="color:#c0392b;">*</span></label>
+              <input type="text" name="title" required placeholder="Event title">
+            </div>
+            <div class="db-form-group">
+              <label>Date <span style="color:#c0392b;">*</span></label>
+              <input type="date" name="event_date" id="newEventDate" required>
+            </div>
+            <div class="db-form-group">
+              <label>Time</label>
+              <input type="time" name="event_time">
+            </div>
+            <div class="db-form-group db-form-group--full">
+              <label>Description</label>
+              <textarea name="description" rows="3" placeholder="Optional description..."></textarea>
+            </div>
+            <div class="db-form-group">
+              <label>Type</label>
+              <select name="event_type">
+                <option value="general">General</option>
+                <option value="hearing">Hearing</option>
+                <option value="meeting">Meeting</option>
+                <option value="holiday">Holiday</option>
+              </select>
+            </div>
+            <% if (role === 'secretary') { %>
+            <div class="db-form-group" style="display:flex;align-items:center;gap:8px;padding-top:24px;">
+              <input type="checkbox" name="is_shared" value="1" id="isShared">
+              <label for="isShared" style="font-weight:400;cursor:pointer;">Share with Captain</label>
+            </div>
+            <% } %>
+          </div>
+        </div>
+        <div class="db-modal-footer">
+          <button type="button" class="db-btn db-btn--outline" onclick="document.getElementById('addEventModal').classList.remove('active')">Cancel</button>
+          <button type="submit" class="db-btn db-btn--primary"><i class="fas fa-save"></i> Save Event</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const events = <%- JSON.stringify(events || []) %>;
+    let calYear = new Date().getFullYear();
+    let calMonth = new Date().getMonth();
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+    function renderCal() {
+      document.getElementById('calMonthLabel').textContent = months[calMonth] + ' ' + calYear;
+      const body = document.getElementById('calBody');
+      body.innerHTML = '';
+      const first = new Date(calYear, calMonth, 1).getDay();
+      const days  = new Date(calYear, calMonth + 1, 0).getDate();
+      const today = new Date();
+
+      for (let i = 0; i < first; i++) {
+        const el = document.createElement('div');
+        el.className = 'cal-day';
+        el.style.background = '#fafbfd';
+        body.appendChild(el);
+      }
+      for (let d = 1; d <= days; d++) {
+        const el = document.createElement('div');
+        const isToday = d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear();
+        el.className = 'cal-day' + (isToday ? ' cal-day--today' : '');
+        el.innerHTML = `<div class="cal-day-num">${d}</div>`;
+        const dateStr = calYear + '-' + String(calMonth+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+        events.filter(e => e.event_date && e.event_date.slice(0,10) === dateStr).forEach(e => {
+          const ev = document.createElement('div');
+          ev.className = 'cal-event' + (e.event_type === 'hearing' ? ' cal-event--blotter' : e.event_type === 'holiday' ? ' cal-event--holiday' : '');
+          ev.textContent = e.title;
+          el.appendChild(ev);
+        });
+        el.addEventListener('click', () => {
+          document.getElementById('newEventDate').value = dateStr;
+          document.getElementById('addEventModal').classList.add('active');
+        });
+        body.appendChild(el);
+      }
+    }
+    function calPrev()  { calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCal(); }
+    function calNext()  { calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCal(); }
+    function calToday() { calYear=new Date().getFullYear(); calMonth=new Date().getMonth(); renderCal(); }
+    renderCal();
+    document.querySelectorAll('.db-nav-item').forEach(i=>i.addEventListener('click',()=>document.getElementById('sidebar').classList.remove('open')));
+  </script>
+</body>
+</html>

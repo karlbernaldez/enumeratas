@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Bacolod BIS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="auth-body">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <img src="/bacolod.png" alt="Bacolod BIS">
+    </div>
+    <h2 class="auth-title">Bacolod BIS</h2>
+    <p class="auth-sub">Barangay Bacolod, Bato, Camarines Sur</p>
+
+    <%- include('../partials/flash') %>
+
+    <form action="/login" method="POST" class="auth-form">
+      <div class="auth-field">
+        <label>Username</label>
+        <div class="auth-input-wrap">
+          <i class="fas fa-user"></i>
+          <input type="text" name="username" placeholder="Enter your username" required autofocus>
+        </div>
+      </div>
+      <div class="auth-field">
+        <label>Password</label>
+        <div class="auth-input-wrap">
+          <i class="fas fa-lock"></i>
+          <input type="password" name="password" placeholder="Enter your password" required>
+        </div>
+      </div>
+      <button type="submit" class="auth-btn">Sign In <i class="fas fa-arrow-right"></i></button>
+    </form>
+
+    <div class="auth-links">
+      <a href="/forgot-password">Forgot password?</a>
+      <span>·</span>
+      <a href="/signup">Create account</a>
+    </div>
+  </div>
+</body>
+</html>

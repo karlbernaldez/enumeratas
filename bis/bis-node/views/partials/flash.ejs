@@ -1,0 +1,10 @@
+<% if (success && success.length) { %>
+  <div class="db-alert db-alert--success" style="margin-bottom:16px;">
+    <i class="fas fa-check-circle"></i> <%= success[0] %>
+  </div>
+<% } %>
+<% if (error && error.length) { %>
+  <div class="db-alert db-alert--error" style="margin-bottom:16px;">
+    <i class="fas fa-exclamation-circle"></i> <%= error[0] %>
+  </div>
+<% } %>

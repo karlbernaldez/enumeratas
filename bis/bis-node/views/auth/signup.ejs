@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up - Bacolod BIS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="auth-body">
+  <div class="auth-card" style="max-width:480px;">
+    <div class="auth-logo"><img src="/bacolod.png" alt="Bacolod BIS"></div>
+    <h2 class="auth-title">Create Account</h2>
+    <p class="auth-sub">Barangay Bacolod, Bato, Camarines Sur</p>
+    <%- include('../partials/flash') %>
+    <form action="/signup/store" method="POST" class="auth-form">
+      <div class="auth-field">
+        <label>Role</label>
+        <select name="role" required style="width:100%;padding:10px 14px;border:1.5px solid #e2e5ef;border-radius:8px;font-family:'Poppins',sans-serif;font-size:13.5px;">
+          <option value="">-- Select Role --</option>
+          <option value="resident">Resident</option>
+          <option value="sk">SK (Sangguniang Kabataan)</option>
+        </select>
+      </div>
+      <div class="auth-field">
+        <label>Full Name</label>
+        <div class="auth-input-wrap"><i class="fas fa-user"></i>
+          <input type="text" name="full_name" placeholder="Juan Dela Cruz" required>
+        </div>
+      </div>
+      <div class="auth-field">
+        <label>Email</label>
+        <div class="auth-input-wrap"><i class="fas fa-envelope"></i>
+          <input type="email" name="email" placeholder="you@email.com" required>
+        </div>
+      </div>
+      <div class="auth-field">
+        <label>Username</label>
+        <div class="auth-input-wrap"><i class="fas fa-at"></i>
+          <input type="text" name="username" placeholder="username" required>
+        </div>
+      </div>
+      <div class="auth-field" id="householdField" style="display:none;">
+        <label>Household Number <span style="color:#c0392b;">*</span></label>
+        <div class="auth-input-wrap"><i class="fas fa-home"></i>
+          <input type="text" name="household_no" placeholder="5-digit household number" maxlength="5">
+        </div>
+        <small style="color:#9aa0b4;font-size:11px;">Ask the barangay office if you don't know your household number.</small>
+      </div>
+      <div class="auth-field">
+        <label>Password</label>
+        <div class="auth-input-wrap"><i class="fas fa-lock"></i>
+          <input type="password" name="password" placeholder="Min. 8 characters" required>
+        </div>
+      </div>
+      <div class="auth-field">
+        <label>Confirm Password</label>
+        <div class="auth-input-wrap"><i class="fas fa-lock"></i>
+          <input type="password" name="confirm_password" placeholder="Repeat password" required>
+        </div>
+      </div>
+      <button type="submit" class="auth-btn">Register <i class="fas fa-arrow-right"></i></button>
+    </form>
+    <div class="auth-links">
+      <a href="/login">Already have an account? Sign in</a>
+    </div>
+  </div>
+  <script>
+    document.querySelector('select[name="role"]').addEventListener('change', function() {
+      document.getElementById('householdField').style.display = this.value === 'resident' ? '' : 'none';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<div class="db-topbar">
+  <button class="db-topbar-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">
+    <i class="fas fa-bars"></i>
+  </button>
+  <div class="db-topbar-title">
+    <h1><%= typeof pageTitle !== 'undefined' ? pageTitle : title %></h1>
+    <span class="db-topbar-date"><%= currentDate %></span>
+  </div>
+  <div class="db-topbar-right">
+    <button class="db-topbar-icon" title="Notifications"><i class="fas fa-bell"></i></button>
+    <div class="db-topbar-user">
+      <% if (session.avatar) { %>
+        <img src="<%= session.avatar %>" class="db-topbar-avatar" alt="avatar">
+      <% } else { %>
+        <div class="db-topbar-avatar-placeholder">
+          <%= session.fullName ? session.fullName[0].toUpperCase() : 'U' %>
+        </div>
+      <% } %>
+      <span class="db-topbar-name"><%= session.fullName || session.username || 'User' %></span>
+    </div>
+  </div>
+</div>

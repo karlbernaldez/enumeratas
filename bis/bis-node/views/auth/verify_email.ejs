@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Email - Bacolod BIS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="auth-body">
+  <div class="auth-card">
+    <div class="auth-logo"><img src="/bacolod.png" alt="Bacolod BIS"></div>
+    <h2 class="auth-title">Verify Your Email</h2>
+    <p class="auth-sub">Enter the 6-digit code sent to your email address.</p>
+    <%- include('../partials/flash') %>
+    <form action="/verify-email" method="POST" class="auth-form">
+      <div class="auth-field">
+        <label>Verification Code</label>
+        <div class="auth-input-wrap"><i class="fas fa-key"></i>
+          <input type="text" name="otp" placeholder="000000" maxlength="6" inputmode="numeric" required autofocus style="letter-spacing:6px;font-size:18px;text-align:center;">
+        </div>
+      </div>
+      <button type="submit" class="auth-btn">Verify <i class="fas fa-check"></i></button>
+    </form>
+    <div class="auth-links">
+      <a href="/resend-otp">Resend code</a>
+      <span>·</span>
+      <a href="/login">Back to login</a>
+    </div>
+  </div>
+</body>
+</html>
